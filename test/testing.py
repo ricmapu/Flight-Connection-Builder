@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 
-from cflights import flight,load_flights
+from fl_conn_builder.cflights import flight,load_flights
 import unittest
-import ConnectionBuilder as cb
+import fl_conn_builder.ConnectionBuilder as cb
 from datetime import timedelta, datetime
-import flight_node
-import graph_explorer as gexp
-from connection import connection, connectionList
-from masterData import airport, load_airports, load_mct
-from mct_calculator import mct_calculation
+import fl_conn_builder.flight_node as flight_node
+import fl_conn_builder.graph_explorer as gexp
+from fl_conn_builder.connection import connection, connectionList
+from fl_conn_builder.masterData import load_airports, load_mct
+from fl_conn_builder.mct_calculator import mct_calculation
 
 class TestcFlightsMethods(unittest.TestCase):
     def test_load_fligts(self):
-        data = load_flights("../data/programa_vuelo_real.csv")
+        data = load_flights("data/programa_vuelo_real.csv")
         self.assertEqual( str(list(data.values())[1]),
             "company:NT fl:102 dep:2017-12-12 08:00:00 arr:2017-12-12 08:30:00 " +
             "orig:TFN des:LPA type: eqp:CRK stops:0 dur:0:30:00")
@@ -68,31 +68,31 @@ class TestcConnectionMethods(unittest.TestCase):
 class TestcConnectionBuilderMethods(unittest.TestCase):
     def test_node(self):
 
-        data = flight_node.flight_node("101", datetime(2016, 1, 1, hour = 8) , "LPA",
+        data = flight_node.flight_node("101", datetime(2016, 1, 1, hour = 8), "LPA",
                                        "id_vacio",
-                                      tipo = flight_node.eNodeType.departure)
+                                       tipo = flight_node.eNodeType.departure)
         self.assertEqual(data.get_id(), "2016-01-01T08:00:00_LPA_101_eNodeType.departure")
 
     def test_CB_basico(self):
 
-        data = load_flights("../data/programa_vuelo.csv")
+        data = load_flights("data/programa_vuelo.csv")
         gr = cb.buildGraph(data)
          
         self.assertEqual(gr.node_count() , 13)
         self.assertEqual(gr.edge_count() , 17)
         
         conexiones  = gexp.connection_explorer(gr, data, bestConnection = False)        
-        conexiones.saveCsv("../data/result/conexiones_temp.csv")        
+        conexiones.saveCsv("data/result/conexiones_temp.csv")        
         self.assertEqual(len(conexiones.connectionList.getList()), 2 )
 
         conexiones2 = gexp.connection_explorer(gr, data, bestConnection = True)
         self.assertEqual(len(conexiones2.connectionList.getList()), 1 )
         
-        conexiones2.saveCsv("../data/result/conexionesCBbasico.csv")
+        conexiones2.saveCsv("data/result/conexionesCBbasico.csv")
          
         
     def test_CB(self):
-        data = load_flights("../data/programa_vuelo_real.csv")
+        data = load_flights("data/programa_vuelo_real.csv")
         gr = cb.buildGraph(data)
          
         self.assertEqual(gr.node_count() , 577)
@@ -103,11 +103,11 @@ class TestcConnectionBuilderMethods(unittest.TestCase):
         
         conexiones2 = gexp.connection_explorer(gr, data, bestConnection = True)
         self.assertEqual(len(conexiones2.connectionList.getList()), 794 )
-        conexiones2.saveCsv("../data/result/conexionesCB.csv")
+        conexiones2.saveCsv("data/result/conexionesCB.csv")
 
     def test_un_vuelo(self):
         
-        data = load_flights("../data/programa_vuelo_simple.csv")
+        data = load_flights("data/programa_vuelo_simple.csv")
         gr = cb.buildGraphTipo2(data)
          
         self.assertEqual(gr.node_count() , 4)
@@ -115,7 +115,7 @@ class TestcConnectionBuilderMethods(unittest.TestCase):
         
         
         conexiones  = gexp.connection_explorer(gr, data, bestConnection = False)
-        conexiones.saveCsv("../data/result/conexiones_un_vuelo.csv")        
+        conexiones.saveCsv("data/result/conexiones_un_vuelo.csv")        
         self.assertEqual(len(conexiones.connectionList.getList()), 0 )
         
         conexiones2 = gexp.connection_explorer(gr, data, bestConnection = True)
@@ -123,7 +123,7 @@ class TestcConnectionBuilderMethods(unittest.TestCase):
 
         
     def test_CB_basicoVersion2(self):
-        data = load_flights("../data/programa_vuelo.csv")
+        data = load_flights("data/programa_vuelo.csv")
         
         gr = cb.buildGraphTipo2(data)
          
@@ -132,16 +132,16 @@ class TestcConnectionBuilderMethods(unittest.TestCase):
         
         
         conexiones  = gexp.connection_explorer(gr, data, bestConnection = False)
-        conexiones.saveCsv("../data/result/conexiones_CB_basicoversion2.csv")        
+        conexiones.saveCsv("data/result/conexiones_CB_basicoversion2.csv")        
         self.assertEqual(len(conexiones.connectionList.getList()), 2 )
         
         conexiones2 = gexp.connection_explorer(gr, data, bestConnection = True)
         self.assertEqual(len(conexiones2.connectionList.getList()), 1 )
         
     def test_CB_basicoVersion2_con_MCT(self):
-        data = load_flights("../data/programa_vuelo.csv")
-        mct_data = load_mct("../data/mct.csv")
-        airport_data = load_airports("../data/aeropuertos.csv")
+        data = load_flights("data/programa_vuelo.csv")
+        mct_data = load_mct("data/mct.csv")
+        airport_data = load_airports("data/aeropuertos.csv")
         
         mct_calc = mct_calculation(airport_data, mct_data)
         
@@ -152,7 +152,7 @@ class TestcConnectionBuilderMethods(unittest.TestCase):
         
         
         conexiones  = gexp.connection_explorer(gr, data, bestConnection = False)
-        conexiones.saveCsv("../data/result/conexiones_CB_basicoversion2.csv")        
+        conexiones.saveCsv("data/result/conexiones_CB_basicoversion2.csv")        
         self.assertEqual(len(conexiones.connectionList.getList()), 2 )
         
         conexiones2 = gexp.connection_explorer(gr, data, bestConnection = True)
@@ -162,7 +162,7 @@ class TestcConnectionBuilderMethods(unittest.TestCase):
    
     def test_CB_version2(self):
 
-        data = load_flights("../data/programa_vuelo_real.csv")
+        data = load_flights("data/programa_vuelo_real.csv")
         gr = cb.buildGraphTipo2(data)
          
         self.assertEqual(gr.node_count() , 374)
@@ -173,7 +173,7 @@ class TestcConnectionBuilderMethods(unittest.TestCase):
         
         conexiones2 = gexp.connection_explorer(gr, data, bestConnection = True)
         self.assertEqual(len(conexiones2.connectionList.getList()), 751 )
-        conexiones2.saveCsv("../data/result/conexionesCB_version2.csv")
+        conexiones2.saveCsv("data/result/conexionesCB_version2.csv")
         
         conexiones2 = gexp.connection_explorer(gr, data, bestConnection = True, bestByDateOD = 130)
         self.assertEqual(len(conexiones2.connectionList.getList()), 130 )
@@ -182,14 +182,14 @@ class TestcConnectionBuilderMethods(unittest.TestCase):
 class TestMasterData(unittest.TestCase):
     def test_airport(self):
 
-        data = load_airports("../data/aeropuertos.csv")
+        data = load_airports("data/aeropuertos.csv")
         self.assertEqual(len(data), 10)
         self.assertEqual( data['LPA'].iatacode,"LPA")
         self.assertEqual( data['LPA'].country,"ES")
         
     def test_MCT(self):
 
-        data = load_mct("../data/mct.csv")
+        data = load_mct("data/mct.csv")
 
         self.assertEqual(len(data), 12)
         self.assertEqual( data[1].airport,"LPA")
@@ -200,8 +200,8 @@ class TestMasterData(unittest.TestCase):
         self.assertEqual( data[1].mct,timedelta(minutes = 30 ))
         
     def test_MCT_calculation(self):
-        airportsM = load_airports("../data/aeropuertos.csv")
-        mctM      = load_mct("../data/mct.csv")
+        airportsM = load_airports("data/aeropuertos.csv")
+        mctM      = load_mct("data/mct.csv")
         mctCalc   = mct_calculation(airportsM, mctM)
         
         fl1 = flight("NT", "101",  datetime(2016, 1, 1, hour = 8) ,  
