@@ -21,7 +21,7 @@ class flight_node(graph.Node):
         return
 
     def get_id(self):
-        id_str = self.time.isoformat() + "_" + self.airport + "_" + self.flight + "_" + str(self.type)
+        id_str = str(self.time) + "_" + self.airport + "_" + self.flight + "_" + str(self.type)
 
         return id_str
 

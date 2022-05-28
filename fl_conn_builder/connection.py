@@ -7,7 +7,7 @@ Created on Sat Dec 16 15:22:14 2017
 """
 
 import csv
-
+from core.schedule import Schedule
 
 class connection:
     def __init__(self, flights=[]):
@@ -25,7 +25,7 @@ class connection:
                 ls_id = ""
         else:  # by origin_destination_day
             if len(self.flight):
-                ls_id = self.flight[0].departure.date().isoformat() + "_" + self.origin + "_" + self.destination
+                ls_id = self.flight[0].departure.get_date().strftime('%Y-%m-%d') + "_" + self.origin + "_" + self.destination
             else:
                 ls_id = ""
 
@@ -77,13 +77,13 @@ class connectionList:
 
 
 class connListManager:
-    def __init__(self, flight_dict, best_connection=False, best_by_date_od=False):
+    def __init__(self, flight_dict: Schedule, best_connection=False, best_by_date_od=False):
         self.fl = flight_dict
         self.connectionList = connectionList(best_connection, best_by_date_od)
 
     def addConnection(self, fl_id_list):
         # Buscamos los vuelos a partir del ID y creamos una conexion
-        fl_list = [self.fl[x] for x in fl_id_list]
+        fl_list = [self.fl.get_task(x) for x in fl_id_list]
         fl_path = connection(fl_list)
 
         self.connectionList.add(fl_path)
@@ -108,14 +108,14 @@ class connListManager:
             csv_iter.writerow(names)
             for row in self.connectionList.getList():
                 data = [row.getId(),
-                        row.flight[0].departure.strftime("%Y-%m-%d"),
+                        str(row.flight[0].departure),
                         row.flight[0].origin,
                         row.flight[-1].destination,
                         row.get_nro_flights(), row.get_duration()]
 
                 for fl in row.flight:
-                    data = data + [fl.departure.strftime("%Y-%m-%d"),
-                                   fl.company + fl.flight,
+                    data = data + [str(fl.departure),
+                                   fl.task_number,
                                    fl.origin, fl.destination,
                                    fl.departure, fl.arrival,
                                    fl.duration]

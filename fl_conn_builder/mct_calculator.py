@@ -34,8 +34,8 @@ class mct_calculation:
 
     def get_mct(self, arrival_flight, departure_flight):
         airport = arrival_flight.destination
-        arrival_cia = arrival_flight.company
-        departure_cia = departure_flight.company
+        arrival_cia = arrival_flight.airline_designator
+        departure_cia = departure_flight.airline_designator
 
         arrival_type = self.get_type(arrival_flight.origin, arrival_flight.destination)
         departure_type = self.get_type(departure_flight.origin, departure_flight.destination)

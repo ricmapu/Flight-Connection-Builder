@@ -9,6 +9,7 @@ import fl_conn_builder.graph_explorer as gexp
 from fl_conn_builder.connection import connection, connectionList
 from fl_conn_builder.masterData import load_airports, load_mct
 from fl_conn_builder.mct_calculator import mct_calculation
+from pycode.core import task
 
 
 class TestcFlightsMethods(unittest.TestCase):
