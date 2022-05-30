@@ -7,9 +7,9 @@ from util.ssimReader import SSIMReader
 
 from fl_conn_builder.connection import connection, connectionList
 import fl_conn_builder.ConnectionBuilder as Cb
-import fl_conn_builder.graph_explorer as gexp
+import fl_conn_builder.graph_explorer as g_explorer
 from fl_conn_builder.mct_calculator import mct_calculation
-from fl_conn_builder.masterData import load_airports, load_mct
+from fl_conn_builder.masterData import load_airports, load_mct, load_mct_cirium
 
 
 class TestConnectionMethods(unittest.TestCase):
@@ -48,83 +48,100 @@ class TestConnectionBuilderMethods(unittest.TestCase):
     def test_CB_basico(self):
         reader = SSIMReader()
 
-        file_name = "../data/programa_vuelo_ssim.txt"
-        sched = reader.read(file_name)
+        file_name = "../data/flight_schedule_ssim.txt"
+        schedule = reader.read(file_name)
 
-        gr = Cb.build_graph(sched)
+        gr = Cb.build_graph(schedule)
 
         self.assertEqual(gr.node_count(), 14)
         self.assertEqual(gr.edge_count(), 18)
 
-        conexiones = gexp.connection_explorer(gr, sched, best_connection=False)
-        conexiones.saveCsv("../data/result/conexiones_temp.csv")
-        self.assertEqual(len(conexiones.connectionList.getList()), 1)
+        connections = g_explorer.connection_explorer(gr, schedule, best_connection=False)
+        connections.saveCsv("../data/result/connections_temp.csv")
+        self.assertEqual(len(connections.connectionList.getList()), 1)
 
-        conexiones2 = gexp.connection_explorer(gr, sched, best_connection=True)
-        self.assertEqual(len(conexiones2.connectionList.getList()), 1)
+        connections2 = g_explorer.connection_explorer(gr, schedule, best_connection=True)
+        self.assertEqual(len(connections2.connectionList.getList()), 1)
 
-        conexiones2.saveCsv("../data/result/conexionesCBbasico.csv")
+        connections2.saveCsv("../data/result/connections_CB_basic.csv")
 
     def test_CB(self):
         reader = SSIMReader()
 
-        file_name = "../data/programa_vuelo_real_ssim.txt"
-        sched = reader.read(file_name)
+        file_name = "../data/flight_schedule_real_ssim.txt"
+        schedule = reader.read(file_name)
 
-        gr = Cb.build_graph(sched)
+        gr = Cb.build_graph(schedule)
 
         self.assertEqual(gr.node_count(), 609)
         self.assertEqual(gr.edge_count(), 818)
 
-        conexiones = gexp.connection_explorer(gr, sched, best_connection=False)
-        self.assertEqual(len(conexiones.connectionList.getList()), 11917)
+        connections = g_explorer.connection_explorer(gr, schedule, best_connection=False)
+        self.assertEqual(len(connections.connectionList.getList()), 11917)
 
-        conexiones2 = gexp.connection_explorer(gr, sched, best_connection=True)
-        self.assertEqual(len(conexiones2.connectionList.getList()), 1197)
-        conexiones2.saveCsv("../data/result/conexionesCB.csv")
+        connections2 = g_explorer.connection_explorer(gr, schedule, best_connection=True)
+        self.assertEqual(len(connections2.connectionList.getList()), 1197)
+        connections2.saveCsv("../data/result/connections_CB.csv")
 
-    def test_un_vuelo(self):
+    def test_one_flight(self):
         reader = SSIMReader()
 
-        file_name = "../data/programa_vuelo_simple_ssim.txt"
-        sched = reader.read(file_name)
-        gr = Cb.build_graph_tipo2(sched)
+        file_name = "../data/flight_schedule_simple_ssim.txt"
+        schedule = reader.read(file_name)
+        gr = Cb.build_graph_tipo2(schedule)
 
         self.assertEqual(gr.node_count(), 4)
         self.assertEqual(gr.edge_count(), 3)
 
-        conexiones = gexp.connection_explorer(gr, sched, best_connection=False)
-        conexiones.saveCsv("../data/result/conexiones_un_vuelo.csv")
-        self.assertEqual(len(conexiones.connectionList.getList()), 0)
+        connections = g_explorer.connection_explorer(gr, schedule, best_connection=False)
+        connections.saveCsv("../data/result/connections_one_flight.csv")
+        self.assertEqual(len(connections.connectionList.getList()), 0)
 
-        conexiones2 = gexp.connection_explorer(gr, sched, best_connection=True)
-        self.assertEqual(len(conexiones2.connectionList.getList()), 0)
+        connections2 = g_explorer.connection_explorer(gr, schedule, best_connection=True)
+        self.assertEqual(len(connections2.connectionList.getList()), 0)
 
-    def test_CB_basicoVersion2(self):
+    def test_inter_airport(self):
         reader = SSIMReader()
 
-        file_name = "../data/programa_vuelo_ssim.txt"
-        sched = reader.read(file_name)
-
-        gr = Cb.build_graph_tipo2(sched)
+        file_name = "../data/flight_schedule_ssim_inter_airport.txt"
+        schedule = reader.read(file_name)
+        gr = Cb.build_graph_tipo2(schedule)
 
         self.assertEqual(gr.node_count(), 8)
         self.assertEqual(gr.edge_count(), 10)
 
-        conexiones = gexp.connection_explorer(gr, sched, best_connection=False)
-        conexiones.saveCsv("../data/result/conexiones_CB_basicoversion2.csv")
-        self.assertEqual(len(conexiones.connectionList.getList()), 1)
+        connections = g_explorer.connection_explorer(gr, schedule, best_connection=False)
+        connections.saveCsv("../data/result/connections_one_flight.csv")
+        self.assertEqual(len(connections.connectionList.getList()), 1)
 
-        conexiones2 = gexp.connection_explorer(gr, sched, best_connection=True)
-        self.assertEqual(len(conexiones2.connectionList.getList()), 1)
+        connections2 = g_explorer.connection_explorer(gr, schedule, best_connection=True)
+        self.assertEqual(len(connections2.connectionList.getList()), 1)
+
+    def test_CB_basicoVersion2(self):
+        reader = SSIMReader()
+
+        file_name = "../data/flight_schedule_ssim.txt"
+        schedule = reader.read(file_name)
+
+        gr = Cb.build_graph_tipo2(schedule)
+
+        self.assertEqual(gr.node_count(), 8)
+        self.assertEqual(gr.edge_count(), 10)
+
+        connections = g_explorer.connection_explorer(gr, schedule, best_connection=False)
+        connections.saveCsv("../data/result/connections_CB_basic_version2.csv")
+        self.assertEqual(len(connections.connectionList.getList()), 1)
+
+        connections2 = g_explorer.connection_explorer(gr, schedule, best_connection=True)
+        self.assertEqual(len(connections2.connectionList.getList()), 1)
 
     def test_CB_basicoVersion2_con_MCT(self):
         reader = SSIMReader()
-        file_name = "../data/programa_vuelo_ssim.txt"
+        file_name = "../data/flight_schedule_ssim.txt"
         data = reader.read(file_name)
 
         mct_data = load_mct("../data/mct.csv")
-        airport_data = load_airports("../data/aeropuertos.csv")
+        airport_data = load_airports("../data/airports.csv")
 
         mct_calc = mct_calculation(airport_data, mct_data)
 
@@ -133,16 +150,16 @@ class TestConnectionBuilderMethods(unittest.TestCase):
         self.assertEqual(gr.node_count(), 8)
         self.assertEqual(gr.edge_count(), 10)
 
-        conexiones = gexp.connection_explorer(gr, data, best_connection=False)
-        conexiones.saveCsv("../data/result/conexiones_CB_basicoversion2.csv")
-        self.assertEqual(len(conexiones.connectionList.getList()), 1)
+        connections = g_explorer.connection_explorer(gr, data, best_connection=False)
+        connections.saveCsv("../data/result/connections_CB_basic_version2.csv")
+        self.assertEqual(len(connections.connectionList.getList()), 1)
 
-        conexiones2 = gexp.connection_explorer(gr, data, best_connection=True)
-        self.assertEqual(len(conexiones2.connectionList.getList()), 1)
+        connections2 = g_explorer.connection_explorer(gr, data, best_connection=True)
+        self.assertEqual(len(connections2.connectionList.getList()), 1)
 
     def test_CB_version2(self):
         reader = SSIMReader()
-        file_name = "../data/programa_vuelo_real_ssim.txt"
+        file_name = "../data/flight_schedule_real_ssim.txt"
         data = reader.read(file_name)
 
         gr = Cb.build_graph_tipo2(data)
@@ -150,22 +167,21 @@ class TestConnectionBuilderMethods(unittest.TestCase):
         self.assertEqual(gr.node_count(), 388)
         self.assertEqual(gr.edge_count(), 2437)
 
-        conexiones = gexp.connection_explorer(gr, data, best_connection=False)
-        self.assertEqual(len(conexiones.connectionList.getList()), 7579)
+        connections = g_explorer.connection_explorer(gr, data, best_connection=False)
+        self.assertEqual(len(connections.connectionList.getList()), 7579)
 
-        conexiones2 = gexp.connection_explorer(gr, data, best_connection=True)
-        self.assertEqual(len(conexiones2.connectionList.getList()), 1036)
-        conexiones2.saveCsv("../data/result/conexionesCB_version2.csv")
+        connections2 = g_explorer.connection_explorer(gr, data, best_connection=True)
+        self.assertEqual(len(connections2.connectionList.getList()), 1036)
+        connections2.saveCsv("../data/result/connections_CB_version2.csv")
 
-        conexiones2 = gexp.connection_explorer(gr, data, best_connection=True, best_by_date_od=True)
-        self.assertEqual(len(conexiones2.connectionList.getList()), 164)
-        conexiones2.saveCsv("../data/result/conexionesCB_version3.csv")
-
+        connections2 = g_explorer.connection_explorer(gr, data, best_connection=True, best_by_date_od=True)
+        self.assertEqual(len(connections2.connectionList.getList()), 164)
+        connections2.saveCsv("../data/result/connections_CB_version3.csv")
 
 
 class TestMasterData(unittest.TestCase):
     def test_airport(self):
-        data = load_airports("../data/aeropuertos.csv")
+        data = load_airports("../data/airports.csv")
         self.assertEqual(len(data), 10)
         self.assertEqual(data['LPA'].iatacode, "LPA")
         self.assertEqual(data['LPA'].country, "ES")
@@ -181,8 +197,19 @@ class TestMasterData(unittest.TestCase):
         self.assertEqual(data[1].type_departure, "I")
         self.assertEqual(data[1].mct, timedelta(minutes=45))
 
+    def test_MCT_cirium(self):
+        data = load_mct_cirium("../data/mct_cirium_format.xlsx")
+
+        self.assertEqual(len(data), 13)
+        self.assertEqual(data[1].airport, "ACE")
+        self.assertEqual(data[1].cia_arrival, "NT")
+        self.assertEqual(data[1].cia_departure, "NT")
+        self.assertEqual(data[1].type_arrival, "D")
+        self.assertEqual(data[1].type_departure, "I")
+        self.assertEqual(data[1].mct, timedelta(minutes=45))
+
     def test_MCT_calculation(self):
-        airports_m = load_airports("../data/aeropuertos.csv")
+        airports_m = load_airports("../data/airports.csv")
         mct_m = load_mct("../data/mct.csv")
         mct_calc = mct_calculation(airports_m, mct_m)
 
