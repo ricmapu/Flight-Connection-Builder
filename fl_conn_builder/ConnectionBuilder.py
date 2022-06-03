@@ -10,11 +10,10 @@ from fl_conn_builder import graph as gr
 from fl_conn_builder import flight_node
 from datetime import timedelta
 from collections import defaultdict
-from fl_conn_builder.mct_calculator import mct_calculation_basic
+from fl_conn_builder.mct_calculator import mct_calculation_basic, mct_calculation
 
 from core.schedule import Schedule
 from core.task import Task
-
 
 def build_graph(flights: Schedule, mct_calc=None):
     if mct_calc is None:
@@ -142,15 +141,17 @@ def build_graph_tipo2(flights=list, mct_calc=None, max_connect_time=None):
         graph.add_edge_id(start_nd.get_id(), dep.get_id())
         graph.add_edge_id(arr.get_id(), end_nd.get_id())
 
-    # Connectar los vuelos de llegada con los vuelos de salida que conecta
+    # Connect every arriving flight with a connecting flight
     for fl in flights:
         arr = flight_node.flight_node(fl.task_number, fl.arrival, fl.destination,
                                       fl.get_id(),
                                       tipo=flight_node.eNodeType.arrival)
-        # buscamos todos lo vuelos que conectan
+        # find every connecting flight departing for the same airport
+        connected_airports = mct_calc.get_intercity_airport(fl.destination)
+
         fl_connections = [x for x in flights
                           if (
-                                  fl.destination == x.origin and fl.arrival + max_connect_time >= x.departure >= (
+                                  x.origin in connected_airports and fl.arrival + max_connect_time >= x.departure >= (
                                   fl.arrival + mct_calc.get_mct(fl, x)))
                           ]
 

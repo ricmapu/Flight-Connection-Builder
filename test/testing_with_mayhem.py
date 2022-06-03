@@ -105,7 +105,13 @@ class TestConnectionBuilderMethods(unittest.TestCase):
 
         file_name = "../data/flight_schedule_ssim_inter_airport.txt"
         schedule = reader.read(file_name)
-        gr = Cb.build_graph_tipo2(schedule)
+
+        mct_data = load_mct_cirium("../data/mct_cirium_format.xlsx")
+        airport_data = load_airports("../data/airports.csv")
+
+        mct_calc = mct_calculation(airport_data, mct_data)
+
+        gr = Cb.build_graph_tipo2(schedule, mct_calc)
 
         self.assertEqual(gr.node_count(), 8)
         self.assertEqual(gr.edge_count(), 10)
@@ -190,7 +196,7 @@ class TestMasterData(unittest.TestCase):
         data = load_mct("../data/mct.csv")
 
         self.assertEqual(len(data), 12)
-        self.assertEqual(data[1].airport, "LPA")
+        self.assertEqual(data[1].arrival_station, "LPA")
         self.assertEqual(data[1].cia_arrival, "NT")
         self.assertEqual(data[1].cia_departure, "NT")
         self.assertEqual(data[1].type_arrival, "D")
@@ -201,7 +207,7 @@ class TestMasterData(unittest.TestCase):
         data = load_mct_cirium("../data/mct_cirium_format.xlsx")
 
         self.assertEqual(len(data), 13)
-        self.assertEqual(data[1].airport, "ACE")
+        self.assertEqual(data[1].arrival_station, "ACE")
         self.assertEqual(data[1].cia_arrival, "NT")
         self.assertEqual(data[1].cia_departure, "NT")
         self.assertEqual(data[1].type_arrival, "D")
